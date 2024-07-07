@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useGetSuggestionsQuery } from '../services/suggestionsApi';
-import { useSaveRatioMutation } from '../services/ratiosApi'; // Import the mutation hook
+import { useSaveRatioMutation } from '../services/ratiosApi';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { parse } from 'mathjs';
 import debounce from 'lodash.debounce';
-import Dropdown from '../components/Dropdown'; // Ensure you have this component for dropdown
-import Alerts from '../components/Alerts'; // Import the Alerts component
+import Dropdown from '../components/Dropdown';
+import Alerts from '../components/Alerts';
 import ViewRatio from '../components/ViewRatio';
 
 export default function CreateRatio() {
@@ -19,9 +19,8 @@ export default function CreateRatio() {
   const [ratioType, setRatioType] = useState('');
   const [alert, setAlert] = useState({ show: false, type: '', message: '' });
   const [isSaveDisabled, setIsSaveDisabled] = useState(true);
-  const [savedRatio, setSavedRatio] = useState(null); // State to hold saved ratio
+  const [savedRatio, setSavedRatio] = useState(null);
 
-  // Debounced function to set search term and show suggestions
   const debouncedSetSearchTerm = useCallback(
     debounce((term) => {
       setSearchTerm(term);
@@ -38,7 +37,6 @@ export default function CreateRatio() {
 
   useEffect(() => {
     return () => {
-      // Cleanup debounce on unmount
       debouncedSetSearchTerm.cancel();
     };
   }, [debouncedSetSearchTerm]);
@@ -47,7 +45,7 @@ export default function CreateRatio() {
     skip: searchTerm.length < 1,
   });
 
-  const [saveRatio] = useSaveRatioMutation(); // Use the mutation hook
+  const [saveRatio] = useSaveRatioMutation();
 
   const handleSuggestionClick = (suggestion) => {
     const parts = expression.split(/([+\-*/%()])/);
@@ -97,7 +95,6 @@ export default function CreateRatio() {
 
   const validateExpression = (expr) => {
     try {
-      // Replace spaces in parameters with underscores before parsing
       const parsedExpression = expr.replace(/\s+/g, '_');
       parse(parsedExpression);
       setIsValid(true);
@@ -126,15 +123,15 @@ export default function CreateRatio() {
     try {
       const response = await saveRatio(ratio).unwrap();
       if (response && response.ratioId) {
-        setAlert({ show: true, type: 'success', message: 'Ratio saved successfully' });
         setSavedRatio(response);
+        setAlert({ show: true, type: 'success', message: 'Ratio saved successfully' });
       } else {
         setAlert({ show: true, type: 'error', message: 'Failed to save ratio' });
       }
-      setTimeout(() => handleCloseAlert(), 4000); // Auto-close after 4 seconds
     } catch (error) {
       setAlert({ show: true, type: 'error', message: 'Failed to save ratio' });
-      setTimeout(() => handleCloseAlert(), 4000); // Auto-close after 4 seconds
+    } finally {
+      setTimeout(() => handleCloseAlert(), 4000);
     }
   };
 
@@ -145,7 +142,6 @@ export default function CreateRatio() {
   const handleCloseModal = () => {
     setSavedRatio(null);
   };
-
 
   return (
     <div className="w-80 relative border p-3 rounded">
@@ -214,7 +210,7 @@ export default function CreateRatio() {
         onSelect={(value) => setRatioType(value)}
       />
       <Button className="" text="Save" onClick={handleSave} disabled={isSaveDisabled} />
-      {savedRatio && <ViewRatio ratio={savedRatio} onClose={handleCloseModal} />} {/* Render ViewRatio with saved ratio details */}
+      {savedRatio && <ViewRatio ratio={savedRatio} onClose={handleCloseModal} />}
     </div>
   );
 }
