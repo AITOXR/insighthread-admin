@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
+
 import { useLoginMutation } from '../services/authApi';
 import { useNavigate } from 'react-router-dom';
 import Input from '../components/Input';
@@ -59,3 +61,8 @@ export default function Login({ onLogin }) {
     </div>
   );
 }
+
+
+Login.propTypes = {
+  onLogin: PropTypes.func.isRequired,
+};

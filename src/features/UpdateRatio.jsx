@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { useGetSuggestionsQuery } from '../services/suggestionsApi';
-import { useSaveRatioMutation } from '../services/ratiosApi';
+import { useUpdateRatioMutation } from '../services/ratiosApi'; 
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { parse } from 'mathjs';
@@ -9,16 +10,16 @@ import Dropdown from '../components/Dropdown';
 import Alerts from '../components/Alerts';
 import ViewRatio from '../components/ViewRatio';
 
-export default function CreateRatio() {
+export default function UpdateRatio({ ratio, onClose }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [expression, setExpression] = useState('');
+  const [expression, setExpression] = useState(ratio.Formula);
   const [isValid, setIsValid] = useState(true);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [ratioName, setRatioName] = useState('');
-  const [description, setDescription] = useState('');
-  const [ratioType, setRatioType] = useState('');
+  const [ratioName, setRatioName] = useState(ratio.Name);
+  const [description, setDescription] = useState(ratio.Description);
+  const [ratioType, setRatioType] = useState(ratio.Type);
   const [alert, setAlert] = useState({ show: false, type: '', message: '' });
-  const [isSaveDisabled, setIsSaveDisabled] = useState(true);
+  const [isSaveDisabled, setIsSaveDisabled] = useState(false);
   const [savedRatio, setSavedRatio] = useState(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -46,7 +47,7 @@ export default function CreateRatio() {
     skip: searchTerm.length < 1,
   });
 
-  const [saveRatio] = useSaveRatioMutation();
+  const [updateRatio] = useUpdateRatioMutation();
 
   const handleSuggestionClick = (suggestion) => {
     const parts = expression.split(/([+\-*/%()])/);
@@ -113,24 +114,23 @@ export default function CreateRatio() {
   }, [ratioName, expression, isValid, description, ratioType]);
 
   const handleSave = async () => {
-    const ratio = {
-      Ratio: {
-        name: ratioName,
-        formula: expression,
-        description,
-        type: ratioType.toLowerCase(),
-      },
+    const updatedRatio = {
+      id: ratio.id,
+      name: ratioName,
+      formula: expression,
+      description,
+      type: ratioType.toLowerCase(),
     };
     try {
-      const response = await saveRatio(ratio).unwrap();
+      const response = await updateRatio(updatedRatio).unwrap();
       if (response && response.ratioId) {
         setSavedRatio(response);
-        setAlert({ show: true, type: 'success', message: 'Ratio saved successfully' });
+        setAlert({ show: true, type: 'success', message: 'Ratio updated successfully' });
       } else {
-        setAlert({ show: true, type: 'error', message: 'Failed to save ratio' });
+        setAlert({ show: true, type: 'error', message: 'Failed to update ratio' });
       }
     } catch (error) {
-      setAlert({ show: true, type: 'error', message: 'Failed to save ratio' });
+      setAlert({ show: true, type: 'error', message: 'Failed to update ratio' });
     } finally {
       setTimeout(() => handleCloseAlert(), 4000);
     }
@@ -142,10 +142,15 @@ export default function CreateRatio() {
 
   const handleCloseModal = () => {
     setSavedRatio(null);
+    onClose(); // Close the update panel
   };
 
   return (
-    <div className="w-80 relative border p-3 rounded">
+    <div className="fixed right-0 top-0 w-1/3 h-full bg-white shadow-lg z-50 p-6 overflow-y-auto">
+      <div className="flex justify-between items-center border-b pb-4 mb-4">
+        <h2 className="text-2xl font-semibold">Update Ratio</h2>
+        <button onClick={handleCloseModal} className="text-lg font-bold">X</button>
+      </div>
       {alert.show && <Alerts type={alert.type} message={alert.message} onClose={handleCloseAlert} />}
       <Input
         className="mb-4"
@@ -209,9 +214,21 @@ export default function CreateRatio() {
         label="Select Type of Ratio"
         options={ratioOptions}
         onSelect={(value) => setRatioType(value)}
+        selectedValue={ratioType.toLowerCase()} // Pass the selected value to Dropdown
       />
-      <Button className="" text="Save" onClick={handleSave} disabled={isSaveDisabled} />
+      <Button className="" text="Update" onClick={handleSave} disabled={isSaveDisabled} />
       {savedRatio && <ViewRatio ratio={savedRatio} onClose={handleCloseModal} />}
     </div>
   );
 }
+
+UpdateRatio.propTypes = {
+  ratio: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    Name: PropTypes.string.isRequired,
+    Formula: PropTypes.string.isRequired,
+    Description: PropTypes.string.isRequired,
+    Type: PropTypes.string.isRequired,
+  }).isRequired,
+  onClose: PropTypes.func.isRequired,
+};

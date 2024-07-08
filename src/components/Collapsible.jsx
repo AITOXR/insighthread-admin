@@ -1,49 +1,34 @@
-import React from "react";
-import PropTypes from "prop-types";
+import { useState } from 'react';
+import PropTypes from 'prop-types';
 
-const Collapsible = ({ title, children }) => {
-  const [
-    isExpanded,
-    setIsExpanded
-  ] = React.useState(false);
+const Collapsible = ({ title, children, className, contentClassName }) => {
+  const [isOpen, setIsOpen] = useState(false);
 
-  const ref = React.useRef();
-
-  const [height, setHeight] = React.useState();
-
-  const handleToggle = e => {
-    e.preventDefault();
-    setIsExpanded(!isExpanded);
-    setHeight(ref.current.clientHeight);
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
   };
 
-  const classes = `list-group-item ${
-    isExpanded ? "is-expanded" : null
-  }`;
-  const currentHeight = isExpanded ? height : 0;
   return (
-    <div
-      className={classes}
-      onClick={handleToggle}
-    >
-      <div className="card-title">
-        <h2>{title}</h2>
+    <div className={`collapsible ${className}`}>
+      <div className="collapsible-header flex justify-between items-center bg-gray-200 p-4 cursor-pointer" onClick={handleToggle}>
+        <h2 className="text-lg font-semibold">{title}</h2>
+        <button className="text-lg font-bold">{isOpen ? '-' : '+'}</button>
       </div>
-      <div
-        className="card-collapse"
-        style={{ height: currentHeight + "px" }}
-      >
-        <div className="card-body" ref={ref}>
-          {children}
-        </div>
-      </div>
+      {isOpen && <div className={`collapsible-content p-4 bg-white ${contentClassName}`}>{children}</div>}
     </div>
   );
 };
 
 Collapsible.propTypes = {
-  title: PropTypes.string,
-  children: PropTypes.node
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  className: PropTypes.string,
+  contentClassName: PropTypes.string,
+};
+
+Collapsible.defaultProps = {
+  className: '',
+  contentClassName: '',
 };
 
 export default Collapsible;

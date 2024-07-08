@@ -2,7 +2,8 @@
 import { Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import CreateRatio from './features/CreateRatio';
-import Collapsible from './components/Collapsible';
+// import Collapsible from './components/Collapsible';
+import View from './features/View'; // Import the View component
 
 function App() {
   return (
@@ -11,7 +12,7 @@ function App() {
       <div className="flex-1 p-4">
         <Routes>
           <Route path="/create-ratio" element={<CreateRatio />} />
-          <Route path="/view-ratio" element={<Collapsible />} />
+          <Route path="/view-ratio" element={<View />} />
           {/* Add other routes here */}
         </Routes>
       </div>
