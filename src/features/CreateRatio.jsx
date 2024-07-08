@@ -209,6 +209,7 @@ export default function CreateRatio() {
         label="Select Type of Ratio"
         options={ratioOptions}
         onSelect={(value) => setRatioType(value)}
+        selectedValue={ratioType} // Pass the selected value to Dropdown
       />
       <Button className="" text="Save" onClick={handleSave} disabled={isSaveDisabled} />
       {savedRatio && <ViewRatio ratio={savedRatio} onClose={handleCloseModal} />}
