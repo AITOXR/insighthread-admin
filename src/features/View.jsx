@@ -155,7 +155,7 @@ const View = () => {
         <Collapsible title="Valuation Ratio">
           <Table
             headers={headers}
-            data={filteredData.filter(item => item.id.startsWith('ratio') && item.Type === 'liquidity')}
+            data={filteredData.filter(item => item.id.startsWith('ratio') && item.Type === 'valuation')}
             onView={handleView}
             onUpdate={handleUpdate}
             onRemove={handleRemove}
@@ -164,7 +164,7 @@ const View = () => {
         <Collapsible title="Liquidity Ratio">
           <Table
             headers={headers}
-            data={filteredData.filter(item => item.id.startsWith('ratio') && item.Type === 'valuation')}
+            data={filteredData.filter(item => item.id.startsWith('ratio') && item.Type === 'liquidity')}
             onView={handleView}
             onUpdate={handleUpdate}
             onRemove={handleRemove}
