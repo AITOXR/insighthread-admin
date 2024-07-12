@@ -30,7 +30,7 @@ export default function CreateRatio() {
       } else {
         setShowSuggestions(false);
       }
-    }, 1000),
+    }, 100),
     []
   );
 
@@ -142,6 +142,16 @@ export default function CreateRatio() {
 
   const handleCloseModal = () => {
     setSavedRatio(null);
+    resetFormFields();
+  };
+
+  const resetFormFields = () => {
+    setRatioName('');
+    setExpression('');
+    setDescription('');
+    setRatioType('');
+    setIsValid(true);
+    setIsSaveDisabled(true);
   };
 
   return (

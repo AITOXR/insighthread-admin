@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar';
 import CreateRatio from './features/CreateRatio';
 // import Collapsible from './components/Collapsible';
 import View from './features/View'; // Import the View component
+import UserManagement from './features/UserManagement';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Routes>
           <Route path="/create-ratio" element={<CreateRatio />} />
           <Route path="/view-ratio" element={<View />} />
+          <Route path="/manage-users" element={<UserManagement />} />
           {/* Add other routes here */}
         </Routes>
       </div>
